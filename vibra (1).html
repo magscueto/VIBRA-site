@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIBRA — ¿Cómo suena el Diseño Argentino?</title>
+<link rel="icon" type="image/x-icon" href="imagenes/v.png">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  VIBRA — Festival de Diseño y Sonido                        ║
+  ║  Editá este archivo en VS Code sin necesidad de bundler.    ║
+  ║                                                              ║
+  ║  IMÁGENES LOCALES                                            ║
+  ║  Creá una carpeta "imagenes/" junto a este HTML y colocá    ║
+  ║  tus fotos con los nombres exactos listados en DEFS abajo.  ║
+  ║  Formatos soportados: JPG, PNG, WEBP, SVG                   ║
+  ║                                                              ║
+  ║  Ejemplo de estructura de carpetas:                          ║
+  ║    vibra/                                                    ║
+  ║    ├── vibra.html       ← este archivo                      ║
+  ║    └── imagenes/                                             ║
+  ║        ├── mate.jpg                                          ║
+  ║        ├── subte.jpg                                         ║
+  ║        ├── senyal.jpg                                        ║
+  ║        ├── maquina.jpg                                       ║
+  ║        ├── bandoneon.jpg                                     ║
+  ║        ├── edificio.jpg                                      ║
+  ║        ├── pava.jpg                                          ║
+  ║        ├── adoquin.jpg                                       ║
+  ║        ├── tipografia.jpg                                    ║
+  ║        ├── colectivo.jpg                                     ║
+  ║        ├── empanada.jpg                                      ║
+  ║        ├── textil.jpg                                        ║
+  ║        ├── obelisco.jpg                                      ║
+  ║        └── futbol.jpg                                        ║
+  ║                                                              ║
+  ║  COLORES DE MARCA                                            ║
+  ║  Definidos en :root y en const C = {} en el JS.             ║
+  ║    Lima      #A0F46C                                         ║
+  ║    Cian      #01D6EB                                         ║
+  ║    Rosa      #FE74E4                                         ║
+  ║    Negro     #000000                                         ║
+  ║    Blanquecino #E2DEDE                                       ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
+
+<style>
+/* ── Variables de marca ── */
+:root {
+  --lima:       #A0F46C;
+  --cian:       #01D6EB;
+  --rosa:       #FE74E4;
+  --negro:      #000000;
+  --blanco:     #E2DEDE;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+ /* background: var(--negro);*/
+  background-image: url('imagenes/ballena.jpg');
+  font-family: 'Space Grotesk', sans-serif;
+  /*color: var(--blanco);-*/
+}
+
+/* ── Canvas principal ── */
+#main-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: block;
+}
+
+/* ── Capa de ondas (ripples) ── */
+#ripple-layer {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid var(--cian);
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripple-out 1.4s cubic-bezier(0.2, 0.6, 0.4, 1) forwards;
+}
+@keyframes ripple-out {
+  0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.9; }
+  100% { transform: translate(-50%,-50%) scale(5); opacity: 0;   }
+}
+
+/* ── Interfaz superpuesta ── */
+#ui {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Barra superior */
+.ui-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 2.2rem 3rem;
+}
+
+.logo { line-height: 1; }
+.logo-nombre {
+  /*font-size: clamp(2.4rem, 4.5vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  color: var(--blanco);
+  display: block;*/
+  
+
+}
+.logo-nombre em {
+  /*font-style: normal;
+  color: var(--lima);*/
+}
+.logo-bajada {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(226,222,222,0.35);
+  margin-top: 01rem;
+  display: block;
+}
+
+.ui-top-der {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.meta-fecha {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(226,222,222,0.3);
+}
+.meta-lugar {
+  font-size: 0.7rem;
+  font-weight: 300;
+  color: rgba(226,222,222,0.45);
+}
+
+/* Etiqueta lateral izquierda */
+.ui-izq {
+  position: absolute;
+  left: 2.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.etiqueta-lateral {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(226,222,222,0.18);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  line-height: 2.2;
+}
+
+/* Lista de participantes (derecha) */
+.ui-der {
+  position: absolute;
+  right: 2.8rem;
+  top: 90%;
+  transform: translateY(-50%);
+  text-align: right;
+}
+.participantes-titulo {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(226,222,222,0.2);
+  margin-bottom: 1rem;
+}
+.participantes-lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.participantes-lista li {
+  font-size: 0.68rem;
+  font-weight: 300;
+  color: rgba(226,222,222,0.3);
+  letter-spacing: 0.05em;
+  transition: color 0.3s;
+  cursor: default;
+  pointer-events: all;
+}
+.participantes-lista li:hover { color: var(--blanco); }
+
+/* Barra inferior */
+.ui-inf {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 2rem 3rem 2.4rem;
+}
+
+.bloque-pregunta { max-width: 480px; }
+.pregunta-sup {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(226,222,222,0.3);
+  margin-bottom: 0.7rem;
+}
+.pregunta-texto {
+  font-size: clamp(1rem, 2vw, 1.55rem);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--blanco);
+}
+.pregunta-texto .acento { color: var(--lima); }
+.pregunta-instruccion {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.52rem;
+  letter-spacing: 0.15em;
+  color: rgba(226,222,222,0.2);
+  margin-top: 0.8rem;
+  text-transform: uppercase;
+}
+
+.bloque-estado {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+.indicador-sonido {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(226,222,222,0.25);
+}
+/*.punto-sonido {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(226,222,222,0.18);
+  transition: background 0.3s, box-shadow 0.3s;
+  flex-shrink: 0;
+}
+.punto-sonido.activo {
+  background: var(--lima);
+  box-shadow: 0 0 8px var(--lima);
+}*/
+.nombre-activo {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--cian);
+  letter-spacing: 0.1em;
+  min-height: 1em;
+  transition: opacity 0.35s;
+  opacity: 0;
+}
+.nombre-activo.visible { opacity: 1; }
+
+/* ── Pantalla de inicio ── */
+#intro {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: var(--negro);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.9s ease, visibility 0.9s ease;
+}
+#intro.oculto {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.intro-ojo {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(226,222,222,0.3);
+  margin-bottom: 2rem;
+}
+
+.intro-titulo {
+  font-size: clamp(5rem, 14vw, 12rem);
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  line-height: 0.88;
+  text-align: center;
+  color: var(--blanco);
+  margin-bottom: 2.5rem;
+  user-select: none;
+}
+.intro-titulo .c1 { color: var(--lima); }
+.intro-titulo .c2 { color: var(--blanco); }
+.intro-titulo .c3 { color: var(--rosa); }
+.intro-titulo .c4 { color: var(--cian); }
+
+.intro-pregunta {
+  font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+  font-weight: 400;
+  color: rgba(226,222,222,0.5);
+  text-align: center;
+  letter-spacing: -0.01em;
+  line-height: 1.6;
+  margin-bottom: 3rem;
+  max-width: 460px;
+}
+.intro-pregunta strong {
+  color: var(--blanco);
+  font-weight: 500;
+}
+
+.boton-entrar {
+  pointer-events: all;
+  background: transparent;
+  border: 1px solid rgba(226,222,222,0.25);
+  color: var(--blanco);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 1rem 3.5rem;
+  cursor: pointer;
+  transition: background 0.35s, border-color 0.35s, color 0.35s;
+}
+.boton-entrar:hover {
+  background: var(--lima);
+  border-color: var(--lima);
+  color: var(--negro);
+}
+
+.intro-nota {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.48rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(226,222,222,0.15);
+  margin-top: 2.2rem;
+}
+
+/* ── Panel central de info ── */
+#panel-info {
+  position: fixed;
+  bottom: 2.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  pointer-events: none;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+#panel-info.visible { opacity: 1; }
+.info-nombre {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--blanco);
+}
+.info-desc {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  color: var(--cian);
+  text-transform: uppercase;
+  margin-top: 0.3rem;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════
+     PANTALLA DE INICIO
+     ═══════════════════════════════════ -->
+<div id="intro">
+  <p class="intro-ojo">Festival de Diseño &amp; Sonido · Buenos Aires · 2026</p>
+  <h1 class="intro-titulo">
+    <img src="imagenes/logo.png" alt="VIBRA" style="width: 25rem; vertical-align: middle; margin-right: 0.4rem;">
+  </h1>
+  <p class="intro-pregunta">
+    <strong>¿Cómo suena el Diseño Argentino?</strong><br>
+    Un playground audiovisual interactivo donde los<br>
+    objetos de diseño se convierten en instrumentos musicales.
+  </p>
+  <button class="boton-entrar" id="btn-entrar">INGRESAR AL ESPACIO →</button>
+  <p class="intro-nota">Recomendado con audio activado · Mejor en escritorio</p>
+</div>
+
+<!-- ═══════════════════════════════════
+     CANVAS INTERACTIVO
+     ═══════════════════════════════════ -->
+<canvas id="main-canvas"></canvas>
+
+<!-- ═══════════════════════════════════
+     CAPA DE ONDAS
+     ═══════════════════════════════════ -->
+<div id="ripple-layer"></div>
+
+<!-- ═══════════════════════════════════
+     PANEL DE INFO (aparece al hover)
+     ═══════════════════════════════════ -->
+<div id="panel-info">
+  <div class="info-nombre" id="info-nombre"></div>
+  <div class="info-desc"   id="info-desc"></div>
+</div>
+
+<!-- ═══════════════════════════════════
+     INTERFAZ SUPERPUESTA
+     ═══════════════════════════════════ -->
+<div id="ui">
+
+  <!-- Superior -->
+  <div class="ui-top">
+    <div class="logo">
+      <img src="imagenes/logo.png" alt="VIBRA" style="width: 10rem; vertical-align: middle; margin-right: 0.4rem;">
+      <span class="logo-bajada">Festival de Diseño &amp; Sonido — 2026</span>
+    </div>
+    <div class="ui-top-der">
+      <span class="meta-fecha">Buenos Aires · Mayo 2026</span>
+      <span class="meta-lugar">Palacio Libertad</span>
+    </div>
+  </div>
+
+  <!-- Borde izquierdo -->
+  <div class="ui-izq">
+    <span class="etiqueta-lateral"> Encuentros Sonoros · Diseño Argentino · Descubrimiento</span>
+  </div>
+
+  <!-- Borde derecho -->
+  <div class="ui-der">
+    <p class="participantes-titulo">Participantes</p>
+    <ul class="participantes-lista">
+      <li>Artistas</li>
+      <li>Diseñadores</li>
+      <li>Músicos</li>
+      <li>Investigadores</li>
+    </ul>
+  </div>
+
+  <!-- Inferior -->
+  <div class="ui-inf">
+    <div class="bloque-pregunta">
+      <p class="pregunta-texto">
+        ¿Cómo suena el <span class="acento">Diseño</span> Argentino?
+      </p>
+      <p class="pregunta-instruccion">
+        Pasá el cursor sobre los objetos · Arrastrá para componer · Dejá que los sonidos se superpongan
+      </p>
+    </div>
+  </div>
+
+</div><!-- /#ui -->
+
+
+<!-- ═══════════════════════════════════
+     SCRIPT PRINCIPAL
+     ═══════════════════════════════════ -->
+<script>
+/*
+  ┌─────────────────────────────────────────────────────────┐
+  │  VIBRA — Playground sonoro interactivo                  │
+  │  Tecnología: JS vanilla, Web Audio API, Canvas 2D       │
+  │  Sin dependencias externas — abrí directo en el browser │
+  └─────────────────────────────────────────────────────────┘
+*/
+
+/* ── Paleta de marca (cambiá los hex acá para retemear todo) ── */
+const C = {
+  lima:   '#A0F46C',
+  cian:   '#01D6EB',
+  rosa:   '#FE74E4',
+  negro:  '#000000',
+  blanco: '#E2DEDE',
+};
+
+/* ── Canvas ── */
+const canvas = document.getElementById('main-canvas');
+const ctx    = canvas.getContext('2d');
+let W, H;
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+/* ── Audio context (se inicia con gesto del usuario) ── */
+let audioCtx;
+function initAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+/* ── Ganancia maestra ── */
+let gananciaM;
+function getGanancia() {
+  if (!gananciaM) {
+    gananciaM = audioCtx.createGain();
+    gananciaM.gain.value = 0.82;
+    gananciaM.connect(audioCtx.destination);
+  }
+  return gananciaM;
+}
+
+/* ── Reverb sintético ── */
+function makeReverb(dur = 2, decay = 2) {
+  const len = audioCtx.sampleRate * dur;
+  const buf = audioCtx.createBuffer(2, len, audioCtx.sampleRate);
+  for (let c = 0; c < 2; c++) {
+    const d = buf.getChannelData(c);
+    for (let i = 0; i < len; i++)
+      d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+  }
+  const conv = audioCtx.createConvolver();
+  conv.buffer = buf;
+  return conv;
+}
+
+/* ══════════════════════════════════════════════════════════
+   DEFINICIÓN DE OBJETOS
+   ══════════════════════════════════════════════════════════
+
+   Cada objeto tiene:
+     id       → nombre de archivo en imagenes/ (sin extensión)
+     ext      → extensión de imagen: 'jpg' | 'png' | 'webp' | 'svg'
+     label    → nombre que se muestra en la tarjeta
+     desc     → descripción breve (aparece en el panel inferior)
+     acento   → color de borde/glow al hacer hover
+     vx, vy   → velocidad de deriva inicial
+     angle    → ángulo de inclinación inicial (radianes)
+     sound(ac)→ síntesis de sonido única para cada objeto
+
+   PARA AGREGAR UN OBJETO NUEVO:
+   1. Copiá uno de los bloques { ... } del array
+   2. Cambiá id, label, desc, acento y sound()
+   3. Colocá la imagen como imagenes/<id>.<ext>
+*/
+const DEFS = [
+  {
+    id: 'mate', ext: 'png',
+    label: 'RIES',
+    desc: 'Vaso Fuso',
+    acento: C.lima,
+    vx: 0.28, vy: 0.18, angle: 0.06,
+    sound(ac) {
+      const osc = ac.createOscillator(), g = ac.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(180, ac.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(110, ac.currentTime + 1.2);
+      g.gain.setValueAtTime(0.32, ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 2);
+      osc.connect(g); g.connect(getGanancia()); osc.start(); osc.stop(ac.currentTime + 2);
+      const o2 = ac.createOscillator(), g2 = ac.createGain();
+      o2.type = 'triangle'; o2.frequency.value = 360;
+      g2.gain.setValueAtTime(0.08, ac.currentTime);
+      g2.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.9);
+      o2.connect(g2); g2.connect(getGanancia()); o2.start(); o2.stop(ac.currentTime + 0.9);
+    }
+  },
+  {
+    id: 'subte', ext: 'png',
+    label: 'CABEZA',
+    desc: 'Chaise Lounge',
+    acento: C.cian,
+    vx: -0.38, vy: 0.14, angle: 0.04,
+    sound(ac) {
+      const buf = ac.createBuffer(1, ac.sampleRate * 0.6, ac.sampleRate);
+      const d   = buf.getChannelData(0);
+      for (let i = 0; i < d.length; i++)
+        d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ac.sampleRate * 0.12)) * 0.35;
+      const src = ac.createBufferSource(); src.buffer = buf;
+      const bp  = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 750; bp.Q.value = 0.8;
+      const g   = ac.createGain(); g.gain.value = 0.6;
+      src.connect(bp); bp.connect(g); g.connect(getGanancia()); src.start();
+      const osc = ac.createOscillator(), go = ac.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(230, ac.currentTime);
+      osc.frequency.linearRampToValueAtTime(185, ac.currentTime + 0.4);
+      go.gain.setValueAtTime(0.18, ac.currentTime);
+      go.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.5);
+      osc.connect(go); go.connect(getGanancia()); osc.start(); osc.stop(ac.currentTime + 0.5);
+    }
+  },
+  {
+    id: 'senyal', ext: 'png',
+    label: 'SCORNIK',
+    desc: 'Cenicero',
+    acento: C.lima,
+    vx: 0.2, vy: -0.28, angle: -0.07,
+    sound(ac) {
+      [0, 0.18, 0.36].forEach(t => {
+        const osc = ac.createOscillator(), g = ac.createGain();
+        osc.type = 'square'; osc.frequency.value = 1100;
+        g.gain.setValueAtTime(0, ac.currentTime + t);
+        g.gain.linearRampToValueAtTime(0.07, ac.currentTime + t + 0.01);
+        g.gain.linearRampToValueAtTime(0, ac.currentTime + t + 0.06);
+        osc.connect(g); g.connect(getGanancia());
+        osc.start(ac.currentTime + t); osc.stop(ac.currentTime + t + 0.1);
+      });
+    }
+  },
+  {
+    id: 'maquina', ext: 'jpg',
+    label: 'MOHADED',
+    desc: 'Lámpara Atalaya',
+    acento: C.cian,
+    vx: -0.22, vy: -0.2, angle: 0.1,
+    sound(ac) {
+      const osc = ac.createOscillator(), lfo = ac.createOscillator();
+      const lg  = ac.createGain(), g = ac.createGain();
+      osc.type = 'sawtooth'; osc.frequency.value = 10;
+      lfo.type = 'sine'; lfo.frequency.value = 7; lg.gain.value = 12;
+      lfo.connect(lg); lg.connect(osc.frequency);
+      g.gain.setValueAtTime(0.45, ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 2.2);
+      osc.connect(g); g.connect(getGanancia());
+      osc.start(); osc.stop(ac.currentTime + 2.2);
+      lfo.start(); lfo.stop(ac.currentTime + 2.2);
+    }
+  },
+  {
+    id: 'bandoneon', ext: 'jpg',
+    label: 'MOHADED',
+    desc: 'Yacaré',
+    acento: C.rosa,
+    vx: 0.14, vy: 0.32, angle: 0.03,
+    sound(ac) {
+      const rev = makeReverb(2.5, 1.8);
+      rev.connect(getGanancia());
+      [196, 233, 294, 370].forEach((f, i) => {
+        const o = ac.createOscillator(), g = ac.createGain();
+        o.type = 'sawtooth'; o.frequency.value = f;
+        g.gain.setValueAtTime(0, ac.currentTime + i * 0.05);
+        g.gain.linearRampToValueAtTime(0.1, ac.currentTime + i * 0.05 + 0.1);
+        g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 2.8);
+        o.connect(g); g.connect(rev);
+        o.start(ac.currentTime + i * 0.05); o.stop(ac.currentTime + 3);
+      });
+    }
+  },
+  {
+    id: 'edificio', ext: 'png',
+    label: 'MOYANO',
+    desc: 'COPÓN',
+    acento: C.rosa,
+    vx: -0.1, vy: 0.22, angle: -0.04,
+    sound(ac) {
+      const osc = ac.createOscillator(), g = ac.createGain();
+      const rev = makeReverb(4, 1.2); rev.connect(getGanancia());
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, ac.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(220, ac.currentTime + 3.5);
+      g.gain.setValueAtTime(0.22, ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 3.5);
+      osc.connect(g); g.connect(rev); osc.start(); osc.stop(ac.currentTime + 3.5);
+    }
+  },
+  {
+    id: 'pava', ext: 'jpg',
+    label: 'POGGIO',
+    desc: 'Silla Taba',
+    acento: C.rosa,
+    vx: 0.33, vy: -0.14, angle: 0.07,
+    sound(ac) {
+      const bufSize = ac.sampleRate * 1.4;
+      const buf = ac.createBuffer(1, bufSize, ac.sampleRate);
+      const d   = buf.getChannelData(0);
+      for (let i = 0; i < bufSize; i++) {
+        const t = i / ac.sampleRate;
+        d[i] = (Math.random() * 2 - 1) * 0.18 * Math.min(t / 0.3, 1) * Math.max(0, 1 - t / 1.4);
+      }
+      const src = ac.createBufferSource(); src.buffer = buf;
+      const hp  = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1800;
+      const g   = ac.createGain(); g.gain.value = 0.9;
+      src.connect(hp); hp.connect(g); g.connect(getGanancia()); src.start();
+    }
+  },
+  {
+    id: 'adoquin', ext: 'jpg',
+    label: 'LEIRO',
+    desc: 'Sillón Rolón',
+    acento: C.lima,
+    vx: -0.18, vy: 0.1, angle: -0.03,
+    sound(ac) {
+      const buf = ac.createBuffer(1, ac.sampleRate * 0.35, ac.sampleRate);
+      const d   = buf.getChannelData(0);
+      for (let i = 0; i < d.length; i++)
+        d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ac.sampleRate * 0.04)) * 0.7;
+      const src = ac.createBufferSource(); src.buffer = buf;
+      const lp  = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 380;
+      const g   = ac.createGain(); g.gain.value = 0.8;
+      src.connect(lp); lp.connect(g); g.connect(getGanancia()); src.start();
+    }
+  },
+  {
+    id: 'tipografia', ext: 'png',
+    label: 'RETA',
+    desc: 'Domo 510',
+    acento: C.rosa,
+    vx: 0.4, vy: 0.04, angle: 0,
+    sound(ac) {
+      [523, 587, 659, 784, 880].forEach((f, i) => {
+        const o = ac.createOscillator(), g = ac.createGain();
+        o.type = 'triangle'; o.frequency.value = f;
+        const t = ac.currentTime + i * 0.09;
+        g.gain.setValueAtTime(0.14, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+        o.connect(g); g.connect(getGanancia());
+        o.start(t); o.stop(t + 0.55);
+      });
+    }
+  },
+  {
+    id: 'colectivo', ext: 'jpg',
+    label: 'SINCLAIR',
+    desc: 'Alacena',
+    acento: C.cian,
+    vx: 0.48, vy: -0.08, angle: 0.02,
+    sound(ac) {
+      const osc = ac.createOscillator(), g = ac.createGain();
+      osc.type = 'sawtooth'; osc.frequency.value = 105;
+      osc.frequency.linearRampToValueAtTime(135, ac.currentTime + 0.6);
+      g.gain.setValueAtTime(0.28, ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 1.4);
+      osc.connect(g); g.connect(getGanancia()); osc.start(); osc.stop(ac.currentTime + 1.4);
+      const oh = ac.createOscillator(), gh = ac.createGain();
+      oh.type = 'square'; oh.frequency.value = 350;
+      gh.gain.setValueAtTime(0, ac.currentTime + 0.15);
+      gh.gain.linearRampToValueAtTime(0.06, ac.currentTime + 0.17);
+      gh.gain.linearRampToValueAtTime(0, ac.currentTime + 0.22);
+      oh.connect(gh); gh.connect(getGanancia());
+      oh.start(ac.currentTime + 0.15); oh.stop(ac.currentTime + 0.25);
+    }
+  },
+  {
+    id: 'empanada', ext: 'jpg',
+    label: 'MOHADED',
+    desc: 'Estantería Kavanagh',
+    acento: C.lima,
+    vx: -0.28, vy: 0.26, angle: -0.06,
+    sound(ac) {
+      [330, 392, 494, 587].forEach((f, i) => {
+        const o = ac.createOscillator(), g = ac.createGain();
+        o.type = 'sine'; o.frequency.value = f;
+        const t = ac.currentTime + i * 0.14;
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(0.16, t + 0.07);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+        o.connect(g); g.connect(getGanancia());
+        o.start(t); o.stop(t + 0.8);
+      });
+    }
+  },
+  {
+    id: 'textil', ext: 'png',
+    label: 'AURORA',
+    desc: 'Licuadora',
+    acento: C.rosa,
+    vx: -0.14, vy: -0.3, angle: 0.09,
+    sound(ac) {
+      const rev = makeReverb(5, 1);
+      rev.connect(getGanancia());
+      [110, 138.6, 165, 220].forEach((f, i) => {
+        const o = ac.createOscillator(), gn = ac.createGain();
+        o.type = i === 0 ? 'sine' : 'triangle'; o.frequency.value = f;
+        gn.gain.setValueAtTime(0, ac.currentTime + i * 0.08);
+        gn.gain.linearRampToValueAtTime(0.12, ac.currentTime + i * 0.08 + 0.2);
+        gn.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 4);
+        o.connect(gn); gn.connect(rev);
+        o.start(ac.currentTime + i * 0.08); o.stop(ac.currentTime + 4.5);
+      });
+    }
+  },
+  {
+    id: 'obelisco', ext: 'png',
+    label: 'GIMENEZ',
+    desc: 'Ceniceros',
+    acento: C.cian,
+    vx: 0.06, vy: -0.1, angle: 0,
+    sound(ac) {
+      const osc = ac.createOscillator(), g = ac.createGain();
+      const lfo = ac.createOscillator(), lg = ac.createGain();
+      osc.type = 'sine'; osc.frequency.value = 528;
+      lfo.type = 'sine'; lfo.frequency.value = 4; lg.gain.value = 14;
+      lfo.connect(lg); lg.connect(osc.frequency);
+      g.gain.setValueAtTime(0.22, ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 2.4);
+      osc.connect(g); g.connect(getGanancia());
+      osc.start(); osc.stop(ac.currentTime + 2.4);
+      lfo.start(); lfo.stop(ac.currentTime + 2.4);
+    }
+    
+  },
+  {
+    id: 'futbol', ext: 'jpg',
+    label: 'GIMENEZ',
+    desc: 'Mueble de los 6 colores',
+    acento: C.lima,
+    vx: 0.5, vy: 0.5, angle: 0,
+    sound(ac) {
+      const bufSize = ac.sampleRate * 1.5;
+      const buf = ac.createBuffer(1, bufSize, ac.sampleRate);
+      const d   = buf.getChannelData(0);
+      for (let i = 0; i < bufSize; i++) {
+        const t = i / ac.sampleRate;
+        d[i] = (Math.random() * 2 - 1) * Math.min(t / 0.2, 1) * Math.max(0, 1 - (t - 0.4) / 0.5);
+      }
+      const src = ac.createBufferSource(); src.buffer = buf;
+      const bp  = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 400; bp.Q.value = 0.9;
+      const g   = ac.createGain(); g.gain.value = 0.7;
+      src.connect(bp); bp.connect(g); g.connect(getGanancia()); src.start();
+      const ow = ac.createOscillator(), gw = ac.createGain();
+      ow.type = 'triangle';
+      ow.frequency.setValueAtTime(2000, ac.currentTime + 0.1);
+      ow.frequency.linearRampToValueAtTime(2200, ac.currentTime + 0.25);
+      gw.gain.setValueAtTime(0.12, ac.currentTime + 0.1);
+      gw.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.4);
+      ow.connect(gw); gw.connect(getGanancia());
+      ow.start(ac.currentTime + 0.1); ow.stop(ac.currentTime + 0.5);
+    }
+  },
+];
+
+/* ══════════════════════════════════════════════════════════
+   PRECARGA DE IMÁGENES
+   Las imágenes se cargan desde la carpeta "imagenes/".
+   Si no existe el archivo, la tarjeta muestra un placeholder
+   con el nombre del objeto — así podés testear sin fotos.
+   ══════════════════════════════════════════════════════════ */
+const imagenes = {}; // { id: HTMLImageElement }
+
+function precargarImagenes(defs) {
+  return Promise.all(
+    defs.map(def => new Promise(resolve => {
+      const img = new Image();
+      img.onload  = () => { imagenes[def.id] = img; resolve(); };
+      img.onerror = () => { imagenes[def.id] = null; resolve(); }; // placeholder si falla
+      img.src = `imagenes/${def.id}.${def.ext}`;
+    }))
+  );
+}
+
+/* ══════════════════════════════════════════════════════════
+   CLASE OBJETO
+   ══════════════════════════════════════════════════════════ */
+const OBJ_R       = 62;   // mitad del lado de la tarjeta cuadrada (px) — ajustá para cambiar tamaño
+const SOUND_DELAY = 2200; // ms mínimos entre sonidos del mismo objeto en hover
+
+class Obj {
+  constructor(def, index, total) {
+    Object.assign(this, def);
+
+    // Distribución inicial en grilla con jitter
+    const cols = 4;
+    const col  = index % cols;
+    const row  = Math.floor(index / cols);
+    const rows = Math.ceil(total / cols);
+    this.x = W * 0.12 + col / (cols - 1) * W * 0.76 + (Math.random() - 0.5) * 90;
+    this.y = H * 0.14 + row / Math.max(rows - 1, 1) * H * 0.72 + (Math.random() - 0.5) * 70;
+
+    // Física
+    this.vx      = (def.vx || 0) * (Math.random() > 0.5 ? 1 : -1);
+    this.vy      = (def.vy || 0) * (Math.random() > 0.5 ? 1 : -1);
+    this.angle   = def.angle || 0;
+    this.angleV  = 0;
+
+    // Estado
+    this.hovered     = false;
+    this.dragging    = false;
+    this.glowA       = 0;
+    this.overlapping = false;
+    this.fase        = Math.random() * Math.PI * 2;
+    this.lastSoundAt = 0;
+
+    // Arrastre
+    this.dragOX = 0;
+    this.dragOY = 0;
+    this.prevX  = this.x;
+    this.prevY  = this.y;
+  }
+
+  update(mouse, ts) {
+    if (this.dragging) {
+      this.prevX = this.x;
+      this.prevY = this.y;
+      return;
+    }
+
+    this.vx *= 0.994;
+    this.vy *= 0.994;
+    this.x  += this.vx;
+    this.y  += this.vy;
+
+    const pad = OBJ_R + 8;
+    if (this.x < pad)     { this.x = pad;     this.vx =  Math.abs(this.vx) * 0.55; }
+    if (this.x > W - pad) { this.x = W - pad; this.vx = -Math.abs(this.vx) * 0.55; }
+    if (this.y < pad)     { this.y = pad;      this.vy =  Math.abs(this.vy) * 0.55; }
+    if (this.y > H - pad) { this.y = H - pad;  this.vy = -Math.abs(this.vy) * 0.55; }
+
+    this.angle += this.angleV;
+    this.angleV *= 0.94;
+
+    const dx = mouse.x - this.x;
+    const dy = mouse.y - this.y;
+    const d  = Math.sqrt(dx * dx + dy * dy);
+    this.hovered = (d < OBJ_R + 16) && !estado.dragging;
+
+    this.glowA += this.hovered ? 0.07 : -0.04;
+    this.glowA  = Math.max(0, Math.min(1, this.glowA));
+
+    if (this.hovered && audioCtx && (ts - this.lastSoundAt) > SOUND_DELAY) {
+      this.lastSoundAt = ts;
+      this.sound(audioCtx);
+      spawnRipple(this.x, this.y, this.acento);
+    }
+  }
+
+  draw(ts) {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+
+    // Rotación con oscilación suave
+    const rot = this.dragging
+      ? this.angle * 0.4
+      : this.angle + Math.sin(ts * 0.0005 + this.fase) * 0.018;
+    ctx.rotate(rot);
+
+    // Escala con pulso sutil
+    const sc = 1
+      + Math.sin(ts * 0.0008 + this.fase) * 0.008
+      + (this.hovered || this.dragging ? 0.06 : 0);
+    ctx.scale(sc, sc);
+
+    const r = OBJ_R;
+
+    /* ── Halo de brillo ── */
+    if (this.glowA > 0.01) {
+      const gr = ctx.createRadialGradient(0, 0, r * 0.3, 0, 0, r * 2.8);
+      gr.addColorStop(0, this.acento + '44');
+      gr.addColorStop(1, 'transparent');
+      ctx.globalAlpha = this.glowA * 0.7;
+      ctx.fillStyle   = gr;
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 2.8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    /* ── Anillos de superposición ── */
+    if (this.overlapping) {
+      ctx.globalAlpha = 0.3;
+      ctx.strokeStyle = this.acento;
+      ctx.lineWidth   = 0.8;
+      for (let ring = 0; ring < 3; ring++) {
+        const rr = r + ring * 20 + Math.sin(ts * 0.003 + this.fase) * 4;
+        ctx.beginPath();
+        ctx.arc(0, 0, rr, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    /* ── Sombra de tarjeta ── */
+    ctx.shadowColor = this.hovered || this.dragging ? this.acento : 'rgba(0,0,0,0.6)';
+    ctx.shadowBlur  = this.hovered || this.dragging ? 26 : 10;
+
+    /* ── Tarjeta — CUADRADA sin radio ── */
+    ctx.fillStyle = '#111111';
+    ctx.fillRect(-r, -r, r * 2, r * 2);   // fillRect = esquinas perfectamente rectas
+    ctx.shadowBlur = 0;
+
+    /* ── Borde de tarjeta ── */
+    if (this.hovered || this.dragging) {
+      ctx.strokeStyle = this.acento;
+      ctx.lineWidth   = 1.5;
+      ctx.globalAlpha = 0.85;
+      ctx.strokeRect(-r, -r, r * 2, r * 2);
+      ctx.globalAlpha = 1;
+    } else {
+      ctx.strokeStyle = 'rgba(226,222,222,0.07)';
+      ctx.lineWidth   = 0.5;
+      ctx.strokeRect(-r, -r, r * 2, r * 2);
+    }
+
+    /* ── Imagen local o placeholder ── */
+    const img = imagenes[this.id];
+    if (img) {
+      // Imagen real: recortada en modo "cover" dentro de la tarjeta
+      const imgSize = r * 2;
+      const imgRatio = img.width / img.height;
+      let sw, sh, sx, sy;
+      if (imgRatio > 1) {
+        sh = img.height; sw = sh; sx = (img.width - sw) / 2; sy = 0;
+      } else {
+        sw = img.width; sh = sw; sx = 0; sy = (img.height - sh) / 2;
+      }
+      // Recorte rectangular limpio
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(-r, -r, r * 2, r * 2);
+      ctx.clip();
+      ctx.drawImage(img, sx, sy, sw, sh, -r, -r, imgSize, imgSize);
+      // Viñeta sutil sobre la imagen
+      const vig = ctx.createRadialGradient(0, 0, r * 0.4, 0, 0, r * 1.5);
+      vig.addColorStop(0, 'rgba(0,0,0,0)');
+      vig.addColorStop(1, 'rgba(0,0,0,0.55)');
+      ctx.fillStyle = vig;
+      ctx.fillRect(-r, -r, r * 2, r * 2);
+      ctx.restore();
+    } else {
+      // Placeholder cuando la imagen no se encuentra
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fillRect(-r + 1, -r + 1, r * 2 - 2, r * 2 - 2);
+      // Icono de placeholder
+      ctx.strokeStyle = 'rgba(226,222,222,0.12)';
+      ctx.lineWidth   = 1;
+      ctx.strokeRect(-r * 0.4, -r * 0.4, r * 0.8, r * 0.8);
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.4, r * 0.1);
+      ctx.lineTo(-r * 0.1, -r * 0.15);
+      ctx.lineTo(r * 0.1, r * 0.05);
+      ctx.lineTo(r * 0.25, -r * 0.1);
+      ctx.lineTo(r * 0.4, r * 0.1);
+      ctx.stroke();
+      // Texto del placeholder
+      ctx.font          = `300 ${r * 0.16}px 'DM Mono', monospace`;
+      ctx.textAlign     = 'center';
+      ctx.textBaseline  = 'middle';
+      ctx.fillStyle     = 'rgba(226,222,222,0.2)';
+      ctx.fillText('imagenes/' + this.id + '.' + this.ext, 0, r * 0.55);
+    }
+
+    /* ── Etiqueta del objeto ── */
+    // Franja inferior semitransparente
+    ctx.fillStyle = 'rgba(0,0,0,0.62)';
+    ctx.fillRect(-r, r * 0.62, r * 2, r * 0.38);
+
+    ctx.font          = `500 ${r * 0.2}px 'Space Grotesk', sans-serif`;
+    ctx.textAlign     = 'center';
+    ctx.textBaseline  = 'middle';
+    ctx.fillStyle     = this.hovered || this.dragging ? this.acento : C.blanco;
+    ctx.fillText(this.label, 0, r * 0.8);
+
+    ctx.restore();
+  }
+}
+
+/* ── Estado global ── */
+let objects = [];
+const estado = {
+  started:  false,
+  dragging: null,
+  mouse:    { x: W / 2, y: H / 2 },
+};
+
+function construirObjetos() {
+  objects = DEFS.map((def, i) => new Obj(def, i, DEFS.length));
+}
+
+/* ── Ripples ── */
+function spawnRipple(x, y, color) {
+  const el   = document.createElement('div');
+  el.className = 'ripple';
+  const size = OBJ_R * 2.4;
+  el.style.cssText = `
+    left:${x}px; top:${y}px;
+    width:${size}px; height:${size}px;
+    border-color:${color};
+    margin-left:${-size / 2}px; margin-top:${-size / 2}px;
+  `;
+  document.getElementById('ripple-layer').appendChild(el);
+  setTimeout(() => el.remove(), 1400);
+}
+
+/* ── Fondo ── */
+function dibujarFondo(ts) {
+  ctx.fillStyle = C.negro;
+  ctx.fillRect(0, 0, W, H);
+
+  // Grilla sutil
+  /*ctx.save();
+  ctx.strokeStyle = 'rgba(226,222,222,0.022)';
+  ctx.lineWidth   = 0.5;
+  const gs = 90;
+  for (let x = 0; x <= W; x += gs) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  for (let y = 0; y <= H; y += gs) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }*/
+  ctx.restore();
+
+  // Marca de agua fantasma
+  /*ctx.save();
+  ctx.font          = `700 ${Math.min(W * 0.26, 240)}px 'Space Grotesk', sans-serif`;
+  ctx.textAlign     = 'center';
+  ctx.textBaseline  = 'middle';
+  ctx.fillStyle     = 'rgba(226,222,222,0.014)';
+  ctx.fillText('VIBRA', W / 2, H / 2);
+  ctx.restore();*/
+
+  // Puntos de esquina animados
+ const t  = ts * 0.001;
+  const pts = [
+    { x: 60,     y: 60     },
+    { x: W - 60, y: 60     },
+    { x: 60,     y: H - 60 },
+    { x: W - 60, y: H - 60 },
+  ];
+  [C.lima, C.cian, C.rosa, C.blanco].forEach((col, i) => {
+    ctx.save();
+    ctx.globalAlpha = 0.25 + Math.sin(t + i * 1.2) * 0.1;
+    ctx.fillStyle   = col;
+    ctx.beginPath();
+    ctx.arc(pts[i].x, pts[i].y, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
+}
+
+/* ── Conexiones de proximidad ── */
+function dibujarConexiones() {
+  const DIST_CONEX  = 210;
+  const DIST_SOLAP  = OBJ_R * 2 + 12;
+
+  objects.forEach(o => o.overlapping = false);
+
+  for (let i = 0; i < objects.length; i++) {
+    for (let j = i + 1; j < objects.length; j++) {
+      const a  = objects[i], b = objects[j];
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const d  = Math.sqrt(dx * dx + dy * dy);
+
+      if (d < DIST_SOLAP && d > 0) {
+        a.overlapping = true; b.overlapping = true;
+        const nx = dx / d, ny = dy / d;
+        const ov = (DIST_SOLAP - d) / 2;
+        if (!a.dragging) { a.x -= nx * ov * 0.3; a.y -= ny * ov * 0.3; }
+        if (!b.dragging) { b.x += nx * ov * 0.3; b.y += ny * ov * 0.3; }
+        const rv = 0.06;
+        if (!a.dragging) { a.vx -= nx * rv; a.vy -= ny * rv; }
+        if (!b.dragging) { b.vx += nx * rv; b.vy += ny * rv; }
+      }
+
+      if (d < DIST_CONEX && d >= DIST_SOLAP) {
+        const alpha = (1 - (d - DIST_SOLAP) / (DIST_CONEX - DIST_SOLAP)) * 0.12;
+        ctx.save();
+        ctx.strokeStyle = C.cian;
+        ctx.lineWidth   = 0.5;
+        ctx.globalAlpha = alpha;
+        ctx.setLineDash([3, 9]);
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+  }
+}
+
+/* ── Actualización de UI ── */
+//const ptoSonido  = document.getElementById('punto-sonido');
+const textoSon   = document.getElementById('texto-sonido');
+const nomActivo  = document.getElementById('nombre-activo');
+const panelInfo  = document.getElementById('panel-info');
+const infoNombre = document.getElementById('info-nombre');
+const infoDesc   = document.getElementById('info-desc');
+
+function actualizarUI() {
+  const hovered = objects.find(o => o.hovered);
+  const drag    = estado.dragging;
+
+  if (hovered) {
+    ptoSonido.classList.add('activo');
+    textoSon.textContent  = hovered.desc;
+    nomActivo.textContent = hovered.label;
+    nomActivo.classList.add('visible');
+    infoNombre.textContent = hovered.label;
+    infoDesc.textContent   = hovered.desc;
+    panelInfo.classList.add('visible');
+    canvas.style.cursor = 'pointer';
+  } else if (drag) {
+    ptoSonido.classList.remove('activo');
+    textoSon.textContent  = 'arrastrando objeto';
+    nomActivo.textContent = drag.label;
+    nomActivo.classList.add('visible');
+    panelInfo.classList.remove('visible');
+    canvas.style.cursor = 'grabbing';
+  } else {
+    ptoSonido.classList.remove('activo');
+    textoSon.textContent = 'sin sonido activo';
+    nomActivo.classList.remove('visible');
+    panelInfo.classList.remove('visible');
+    canvas.style.cursor = 'default';
+  }
+}
+
+/* ── Sonidos ambientes aleatorios (cada ~10s) ── */
+let ultimoAmbiente = 0;
+function ambienteAleatorio(ts) {
+  if (!audioCtx) return;
+  if (ts - ultimoAmbiente > 9500) {
+    const inactivos = objects.filter(o => !o.hovered && !o.dragging);
+    if (inactivos.length) {
+      const o = inactivos[Math.floor(Math.random() * inactivos.length)];
+      o.sound(audioCtx);
+      ultimoAmbiente = ts;
+    }
+  }
+}
+
+/* ── Loop principal ── */
+function loop(ts) {
+  requestAnimationFrame(loop);
+  if (!estado.started) return;
+
+  objects.forEach(o => o.update(estado.mouse, ts));
+  ambienteAleatorio(ts);
+
+  dibujarFondo(ts);
+  dibujarConexiones();
+  objects.forEach(o => o.draw(ts));
+  actualizarUI();
+}
+requestAnimationFrame(loop);
+
+/* ── Eventos de entrada ── */
+canvas.addEventListener('mousemove', e => {
+  estado.mouse.x = e.clientX;
+  estado.mouse.y = e.clientY;
+  if (estado.dragging) {
+    estado.dragging.x = e.clientX - estado.dragging.dragOX;
+    estado.dragging.y = e.clientY - estado.dragging.dragOY;
+  }
+});
+
+canvas.addEventListener('mousedown', e => {
+  if (!estado.started) return;
+  for (let i = objects.length - 1; i >= 0; i--) {
+    const o  = objects[i];
+    const dx = e.clientX - o.x;
+    const dy = e.clientY - o.y;
+    // Detección de clic dentro del cuadrado (no círculo)
+    if (Math.abs(dx) < OBJ_R + 12 && Math.abs(dy) < OBJ_R + 12) {
+      estado.dragging = o;
+      o.dragging  = true;
+      o.dragOX    = dx;
+      o.dragOY    = dy;
+      o.vx        = 0;
+      o.vy        = 0;
+      objects.splice(i, 1);
+      objects.push(o); // traer al frente
+      break;
+    }
+  }
+});
+
+canvas.addEventListener('mouseup', e => {
+  if (estado.dragging) {
+    estado.dragging.dragging = false;
+    estado.dragging.vx  = (e.clientX - estado.dragging.prevX) * 0.08;
+    estado.dragging.vy  = (e.clientY - estado.dragging.prevY) * 0.08;
+    estado.dragging.angleV = (Math.random() - 0.5) * 0.04;
+    estado.dragging = null;
+  }
+});
+
+// Soporte táctil
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const t  = e.touches[0];
+  canvas.dispatchEvent(new MouseEvent('mousedown', { clientX: t.clientX, clientY: t.clientY }));
+}, { passive: false });
+
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const t = e.touches[0];
+  estado.mouse.x = t.clientX; estado.mouse.y = t.clientY;
+  if (estado.dragging) {
+    estado.dragging.x = t.clientX - estado.dragging.dragOX;
+    estado.dragging.y = t.clientY - estado.dragging.dragOY;
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchend', e => {
+  e.preventDefault();
+  canvas.dispatchEvent(new MouseEvent('mouseup', { clientX: estado.mouse.x, clientY: estado.mouse.y }));
+}, { passive: false });
+
+/* ── Botón de entrada ── */
+document.getElementById('btn-entrar').addEventListener('click', async () => {
+  initAudio();
+  // Esperar a que las imágenes carguen antes de mostrar el canvas
+  await precargarImagenes(DEFS);
+  construirObjetos();
+  estado.started = true;
+  document.getElementById('intro').classList.add('oculto');
+  // Acorde de bienvenida
+  setTimeout(() => {
+    if (objects.length && audioCtx) objects[12].sound(audioCtx); // Obelisco
+  }, 700);
+});
+</script>
+</body>
+</html>
